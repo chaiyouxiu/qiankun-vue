@@ -8,7 +8,6 @@ import actions from '@/shared/actions'
 const whiteList = ['/login'] // 不重定向白名单
 
 router.beforeEach((to, from, next) => {
-  debugger
   NProgress.start()
   // token存在
   if (getToken()) {
@@ -20,8 +19,9 @@ router.beforeEach((to, from, next) => {
       if (store.getters.roles.length === 0) {
           // 根据用户信息获取权限
           store.dispatch('GetInfo').then(res => {
-            let menus=res.data.menus
-            let username=res.data.username
+            // let menus= res.data.menus
+            let menus= []
+            let username= res.data.username
             // 生成可访问的路由表
             store.dispatch('GenerateRoutes', { menus,username }).then(() => {
               // 动态添加可访问路由表

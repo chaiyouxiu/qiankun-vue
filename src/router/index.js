@@ -18,6 +18,7 @@ import Layout from '../views/layout/Layout'
     icon: 'svg-name'             the icon show in the sidebar,
   }
  **/
+
 export const constantRouterMap = [
   {path: '/login', component: () => import('@/views/login/index'), hidden: true},
   {path: '/404', component: () => import('@/views/404'), hidden: true},
@@ -360,11 +361,17 @@ export const asyncRouterMap = [
   },
   {path: '*', redirect: '/404', hidden: true}
 ]
-
-export default new Router({
+const router = new Router({
   mode: 'history', //后端支持可开
   scrollBehavior: () => ({y: 0}),
   routes: constantRouterMap,
   base: '/project/vueApp'
 })
+
+router.beforeEach((to, from, next) => {
+  debugger
+  next()
+})
+
+export default router 
 

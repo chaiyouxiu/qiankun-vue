@@ -5,23 +5,49 @@ import Cookies from 'js-cookie'
  * @param {*} menus 权限菜单
  * @returns 
  */
-function getAccessedRouters(menus) {
-  const accessedRouters = asyncRouterMap.filter(v => {
-    if (hasPermission(menus, v)) {
-      if (v.children && v.children.length > 0) {
-        v.children = v.children.filter(child => {
-          if (hasPermission(menus, child)) {
-            return child
-          }
-          return false
-        });
-        return v
-      } else {
-        return v
-      }
-    }
-    return false
+
+function handleMenuTree (menus) {
+  const parentNodeList = menus.filter(item => {
+    item.children = []
+    return item.nodeId
   })
+  menus.forEach(item => {
+    item.meta = {title: item.label}
+    if (item.parentId) {
+      item.component = _import(item.component)
+      const index = parentNodeList.findIndex(k => k.nodeId === item.parentId)
+      parentNodeList[index].children.push(item)
+    }
+  })
+  return parentNodeList
+}
+
+function _import (file) {
+  return () => import('@/views/' + file + '.vue')
+}
+function getAccessedRouters(menus) {
+  let accessedRouters = []
+  if(window.__POWERED_BY_QIANKUN__){
+    accessedRouters = handleMenuTree(menus)
+  } else {
+    accessedRouters = asyncRouterMap
+    // .filter(v => {
+    //   if (hasPermission(menus, v)) {
+    //     if (v.children && v.children.length > 0) {
+    //       v.children = v.children.filter(child => {
+    //         if (hasPermission(menus, child)) {
+    //           return child
+    //         }
+    //         return false
+    //       });
+    //       return v
+    //     } else {
+    //       return v
+    //     }
+    //   }
+    //   return false
+    // })
+  }
   return accessedRouters
 }
 //判断是否有权限访问该菜单

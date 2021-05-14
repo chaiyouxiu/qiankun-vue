@@ -15,12 +15,12 @@ import store from './store'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import actions from '@/shared/actions'
 
 Vue.use(ElementUI, { locale })
 Vue.use(VCharts)
 
 Vue.config.productionTip = false
-
 
 let instance = null
 
@@ -32,6 +32,7 @@ function render(props = {}) {
     render: h => h(App)
   }).$mount(container ? container.querySelector('#app') : '#app')
 }
+
 if(window.__POWERED_BY_QIANKUN__){
   __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__
 }
@@ -40,13 +41,16 @@ if(!window.__POWERED_BY_QIANKUN__) {
 }
 
 export async function bootstrap() {}
+
 export async function mount(props) {
   render(props)
-  props.onGlobalStateChange((state) => {
+  actions.setActions(props)
+  actions.onGlobalStateChange((state) => {
     const menus = state.vueMenu || []
-    store.dispatch('GenerateRoutes', { menus }).then(() => { // 生成可访问的路由表
-      router.addRoutes(store.getters.addRouters); // 动态添加可访问路由表
-    })
+    // store.dispatch('GenerateRoutes', { menus }).then(() => { // 生成可访问的路由表
+    //   router.addRoutes(store.getters.addRouters); // 动态添加可访问路由表
+    // })
+    store.dispatch('GenerateRoutes', { menus })
   })
 }
 
